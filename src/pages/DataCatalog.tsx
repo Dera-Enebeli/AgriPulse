@@ -168,18 +168,18 @@ const DataCatalog: React.FC = () => {
 
       {/* CTA Section */}
       <section className="py-16 bg-primary-600 text-white">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Need Custom Data Solutions?
-          </h2>
-          <p className="text-xl mb-8 text-primary-100">
-            We can provide tailored agricultural insights for your specific needs
-          </p>
-          <button className="btn-secondary text-lg">
-            Discuss Custom Solutions
-          </button>
-        </div>
-      </section>
+              <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <h2 className="text-3xl md:text-4xl font-bold mb-4">
+                  Need Custom Regional Insights?
+                </h2>
+                <p className="text-xl mb-8 text-primary-100">
+                  We can provide tailored regional intelligence for your specific geographic needs
+                </p>
+                <Link to="/custom-solutions" className="btn-secondary text-lg">
+                  Discuss Custom Solutions
+                </Link>
+              </div>
+            </section>
 
       {/* Request Sample Modal */}
       <RequestSampleModal

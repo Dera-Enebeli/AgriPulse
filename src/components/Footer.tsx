@@ -9,25 +9,25 @@ const Footer: React.FC = () => {
           <div className="col-span-1 md:col-span-2">
             <div className="flex items-center mb-4">
               <div className="w-8 h-8 bg-primary-600 rounded-lg mr-3 flex items-center justify-center">
-                <span className="text-white font-bold text-lg">F</span>
+                <span className="text-white font-bold text-lg">A</span>
               </div>
-              <span className="text-xl font-bold">FarmData</span>
+              <span className="text-xl font-bold">AgriPulse</span>
             </div>
             <p className="text-gray-300 mb-4">
-              Real-time farm intelligence from Nigerian farmers. Aggregated, anonymous insights for data-driven agriculture.
+              Real-time agricultural intelligence from farmer cooperatives worldwide. Aggregated, anonymous insights for data-driven agriculture.
             </p>
             <p className="text-gray-400 text-sm">
-              © 2026 FarmData. All rights reserved.
+              © 2026 AgriPulse. All rights reserved.
             </p>
           </div>
           
           <div>
             <h3 className="font-semibold mb-4">Data Categories</h3>
             <ul className="space-y-2 text-gray-300">
-              <li><button className="text-left hover:text-primary-400 transition-colors">Crop Trends</button></li>
-              <li><button className="text-left hover:text-primary-400 transition-colors">Yield Data</button></li>
-              <li><button className="text-left hover:text-primary-400 transition-colors">Risk Alerts</button></li>
-              <li><button className="text-left hover:text-primary-400 transition-colors">Market Insights</button></li>
+              <li><Link to="/data/crop-data" className="hover:text-primary-400 transition-colors">Crop Trends</Link></li>
+              <li><Link to="/data/crop-data" className="hover:text-primary-400 transition-colors">Yield Data</Link></li>
+              <li><Link to="/data/risk-analysis" className="hover:text-primary-400 transition-colors">Risk Alerts</Link></li>
+              <li><Link to="/data/market-data" className="hover:text-primary-400 transition-colors">Market Insights</Link></li>
             </ul>
           </div>
           
@@ -36,8 +36,8 @@ const Footer: React.FC = () => {
             <ul className="space-y-2 text-gray-300">
               <li><Link to="/about" className="hover:text-primary-400 transition-colors">About Us</Link></li>
               <li><Link to="/contact" className="hover:text-primary-400 transition-colors">Contact</Link></li>
-              <li><button className="text-left hover:text-primary-400 transition-colors">Privacy Policy</button></li>
-              <li><button className="text-left hover:text-primary-400 transition-colors">Terms of Service</button></li>
+              <li><Link to="/privacy" className="hover:text-primary-400 transition-colors">Privacy Policy</Link></li>
+              <li><Link to="/terms" className="hover:text-primary-400 transition-colors">Terms of Service</Link></li>
             </ul>
           </div>
         </div>
