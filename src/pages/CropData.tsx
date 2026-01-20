@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import SampleChart from '../components/SampleChart';
 import RequestSampleModal from '../components/RequestSampleModal';
 import DataNavigation from '../components/DataNavigation';
+import { Link } from 'react-router-dom';
 
 const CropData: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -199,9 +200,9 @@ const CropData: React.FC = () => {
           <p className="text-xl mb-8 text-primary-100">
             We can provide tailored agricultural insights for your specific crop data needs
           </p>
-          <button className="btn-secondary text-lg">
+          <Link to="/custom-solutions" className="btn-secondary text-lg">
             Discuss Custom Solutions
-          </button>
+          </Link>
         </div>
       </section>
 

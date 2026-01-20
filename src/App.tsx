@@ -8,6 +8,7 @@ import CropData from './pages/CropData';
 import MarketData from './pages/MarketData';
 import RiskAnalysis from './pages/RiskAnalysis';
 import RegionalInsights from './pages/RegionalInsights';
+import CustomSolutions from './pages/CustomSolutions';
 // import TestPage from './TestPage';
 import About from './pages/About';
 import Contact from './pages/Contact';
@@ -37,6 +38,7 @@ function App() {
             <Route path="/data/market-data" element={<MarketData />} />
             <Route path="/data/risk-analysis" element={<RiskAnalysis />} />
             <Route path="/data/regional-insights" element={<RegionalInsights />} />
+            <Route path="/custom-solutions" element={<CustomSolutions />} />
             {/* <Route path="/test" element={<TestPage />} /> */}
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
