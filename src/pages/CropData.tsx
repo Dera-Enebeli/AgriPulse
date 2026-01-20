@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import SampleChart from '../components/SampleChart';
 import RequestSampleModal from '../components/RequestSampleModal';
 import DataNavigation from '../components/DataNavigation';
-import { Link } from 'react-router-dom';
 
 const CropData: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);

@@ -3,7 +3,6 @@ import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-route
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import ScrollToTopButton from './components/ScrollToTopButton';
-import HomeSimple from './HomeSimple';
 import DataCatalog from './pages/DataCatalog';
 import CropData from './pages/CropData';
 import MarketData from './pages/MarketData';
