@@ -13,6 +13,9 @@ import CustomSolutions from './pages/CustomSolutions';
 import About from './pages/About';
 import Contact from './pages/Contact';
 import Home from './pages/Home';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import TermsOfService from './pages/TermsOfService';
+import DataEthics from './pages/DataEthics';
 
 const ScrollToTop: React.FC = () => {
   const { pathname } = useLocation();
@@ -42,6 +45,9 @@ function App() {
             {/* <Route path="/test" element={<TestPage />} /> */}
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
+            <Route path="/privacy" element={<PrivacyPolicy />} />
+            <Route path="/terms" element={<TermsOfService />} />
+            <Route path="/ethics" element={<DataEthics />} />
           </Routes>
         </main>
         <Footer />
