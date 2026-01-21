@@ -25,7 +25,7 @@ const Footer: React.FC = () => {
             <h3 className="font-semibold mb-4">Data Categories</h3>
             <ul className="space-y-2 text-gray-300">
               <li><Link to="/data/crop-data" className="hover:text-primary-400 transition-colors">Crop Trends</Link></li>
-              <li><Link to="/data/crop-data" className="hover:text-primary-400 transition-colors">Yield Data</Link></li>
+              {/* <li><Link to="/data/yield-data" className="hover:text-primary-400 transition-colors">Yield Data</Link></li> */}
               <li><Link to="/data/risk-analysis" className="hover:text-primary-400 transition-colors">Risk Alerts</Link></li>
               <li><Link to="/data/market-data" className="hover:text-primary-400 transition-colors">Market Insights</Link></li>
             </ul>

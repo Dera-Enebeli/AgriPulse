@@ -14,7 +14,7 @@ const PrivacyPolicy: React.FC = () => {
           
           <div className="prose prose-lg max-w-none">
             <p className="text-gray-600 mb-8 leading-relaxed">
-              AgriPulse ("we", "our", "us") operates an agricultural insights pilot focused on generating 
+              AgriPulse operates an agricultural insights pilot focused on generating 
               aggregated, anonymized data to improve decision-making across the agricultural value chain.
             </p>
 
