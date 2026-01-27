@@ -16,17 +16,35 @@ const Contact: React.FC = () => {
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Form submitted:', formData);
-    alert('Thank you for your request! We will contact you within 24 hours.');
-    setFormData({
-      name: '',
-      organization: '',
-      email: '',
-      useCase: '',
-      message: ''
-    });
+    
+    try {
+      const response = await fetch('/api/contact/submit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        alert('Thank you for your request! We will contact you within 24 hours.');
+        setFormData({
+          name: '',
+          organization: '',
+          email: '',
+          useCase: '',
+          message: ''
+        });
+      } else {
+        alert(data.error || 'Failed to submit request. Please try again.');
+      }
+    } catch (error) {
+      alert('Network error. Please try again.');
+    }
   };
 
   return (

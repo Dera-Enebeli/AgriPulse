@@ -29,7 +29,26 @@ const Navbar: React.FC = () => {
             <Link to="/" className="text-gray-700 hover:text-primary-600 transition-colors">Home</Link>
             <Link to="/data" className="text-gray-700 hover:text-primary-600 transition-colors">Data Catalog</Link>
             <Link to="/about" className="text-gray-700 hover:text-primary-600 transition-colors">About</Link>
-            <Link to="/contact" className="btn-primary">Request Access</Link>
+            {localStorage.getItem('token') ? (
+              <>
+                <Link to="/dashboard" className="text-gray-700 hover:text-primary-600 transition-colors">Dashboard</Link>
+                <Link to="/payment" className="text-gray-700 hover:text-primary-600 transition-colors">Pricing</Link>
+                <button
+                  onClick={() => {
+                    localStorage.removeItem('token');
+                    window.location.href = '/';
+                  }}
+                  className="text-gray-700 hover:text-primary-600 transition-colors"
+                >
+                  Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <Link to="/login" className="text-gray-700 hover:text-primary-600 transition-colors">Login</Link>
+                <Link to="/register" className="btn-primary">Sign Up</Link>
+              </>
+            )}
           </div>
           
           <div className="md:hidden">
@@ -77,13 +96,50 @@ const Navbar: React.FC = () => {
             >
               About
             </Link>
-            <Link 
-              to="/contact" 
-              className="block px-3 py-2 rounded-md text-base font-medium text-white bg-primary-600 hover:bg-primary-700 transition-colors"
-              onClick={closeMenu}
-            >
-              Request Access
-            </Link>
+            {localStorage.getItem('token') ? (
+              <>
+                <Link 
+                  to="/dashboard" 
+                  className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary-600 hover:bg-gray-50 transition-colors"
+                  onClick={closeMenu}
+                >
+                  Dashboard
+                </Link>
+                <Link 
+                  to="/payment" 
+                  className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary-600 hover:bg-gray-50 transition-colors"
+                  onClick={closeMenu}
+                >
+                  Pricing
+                </Link>
+                <button
+                  onClick={() => {
+                    localStorage.removeItem('token');
+                    window.location.href = '/';
+                  }}
+                  className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary-600 hover:bg-gray-50 transition-colors"
+                >
+                  Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <Link 
+                  to="/login" 
+                  className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary-600 hover:bg-gray-50 transition-colors"
+                  onClick={closeMenu}
+                >
+                  Login
+                </Link>
+                <Link 
+                  to="/register" 
+                  className="block px-3 py-2 rounded-md text-base font-medium text-white bg-primary-600 hover:bg-primary-700 transition-colors"
+                  onClick={closeMenu}
+                >
+                  Sign Up
+                </Link>
+              </>
+            )}
           </div>
         </div>
       )}

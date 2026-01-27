@@ -16,6 +16,10 @@ import Home from './pages/Home';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsOfService from './pages/TermsOfService';
 import DataEthics from './pages/DataEthics';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import Payment from './pages/Payment';
+import Dashboard from './components/Dashboard';
 
 const ScrollToTop: React.FC = () => {
   const { pathname } = useLocation();
@@ -36,6 +40,10 @@ function App() {
         <main className="flex-grow">
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/payment" element={<Payment />} />
             <Route path="/data" element={<DataCatalog />} />
             <Route path="/data/crop-data" element={<CropData />} />
             <Route path="/data/market-data" element={<MarketData />} />
@@ -48,6 +56,7 @@ function App() {
             <Route path="/privacy" element={<PrivacyPolicy />} />
             <Route path="/terms" element={<TermsOfService />} />
             <Route path="/ethics" element={<DataEthics />} />
+            <Route path="*" element={<Home />} /> {/* Fallback to home */}
           </Routes>
         </main>
         <Footer />

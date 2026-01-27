@@ -1,0 +1,623 @@
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
+
+const Payment: React.FC = () => {
+  const [plans, setPlans] = useState<any[]>([]);
+  const [selectedPlan, setSelectedPlan] = useState<string>('');
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>('');
+  const [loading, setLoading] = useState(false);
+  const [user, setUser] = useState<any>(null);
+  const [currentSubscription, setCurrentSubscription] = useState<any>(null);
+  const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    fetchPlans();
+    fetchUserData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const fetchPlans = async () => {
+    try {
+      const response = await fetch('/api/payment/plans');
+      const data = await response.json();
+      if (response.ok) {
+        setPlans(data.plans);
+      }
+    } catch (err) {
+      console.error('Failed to fetch plans:', err);
+    }
+  };
+
+  const fetchUserData = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        navigate('/login');
+        return;
+      }
+
+      // Fetch user data
+      const userResponse = await fetch('/api/auth/me', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (userResponse.ok) {
+        const userData = await userResponse.json();
+        setUser(userData.user);
+      }
+
+      // Fetch subscription status
+      const subscriptionResponse = await fetch('/api/payment/status', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (subscriptionResponse.ok) {
+        const subscriptionData = await subscriptionResponse.json();
+        setCurrentSubscription(subscriptionData.subscription);
+        if (subscriptionData.subscription?.plan) {
+          setSelectedPlan(subscriptionData.subscription.plan);
+        }
+      }
+    } catch (err) {
+      console.error('Failed to fetch user data:', err);
+    }
+  };
+
+  const handleSubscribe = async (planId: string, paymentMethod: string = 'paystack') => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('/api/payment/create-payment-session', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ planId, paymentMethod })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        if (data.url) {
+          // Redirect to Paystack payment
+          window.location.href = data.url;
+        } else if (data.bankDetails) {
+          // Show beautiful bank transfer modal
+          await Swal.fire({
+            title: 'Bank Transfer Instructions',
+            html: `
+              <div style="text-align: left;">
+                <div style="background: #f9fafb; padding: 16px; border-radius: 8px; margin-bottom: 16px;">
+                  <p style="font-weight: 600; color: #111827; margin-bottom: 8px;">Transfer Details:</p>
+                  <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <p><span style="font-weight: 500;">Bank:</span> ${data.bankDetails.bankName}</p>
+                    <p><span style="font-weight: 500;">Account Name:</span> ${data.bankDetails.accountName}</p>
+                    <p><span style="font-weight: 500;">Account Number:</span> <span style="font-weight: bold; color: #2563eb; font-size: 18px;">${data.bankDetails.accountNumber}</span></p>
+                    <p><span style="font-weight: 500;">Amount:</span> <span style="font-weight: bold; color: #059669; font-size: 18px;">₦${data.bankDetails.amount.toLocaleString()}</span></p>
+                    <p><span style="font-weight: 500;">Reference:</span> <span style="background: #fef3c7; padding: 2px 8px; border-radius: 4px; font-size: 12px;">${data.bankDetails.reference}</span></p>
+                  </div>
+                </div>
+                <div style="background: #dbeafe; padding: 12px; border-radius: 8px;">
+                  <p style="color: #1e40af; font-size: 14px;">
+                    <strong>Next Steps:</strong> Make the transfer and contact support with your payment receipt and reference number to activate your subscription.
+                  </p>
+                </div>
+              </div>
+            `,
+            icon: 'info',
+            confirmButtonText: 'I Understand',
+            confirmButtonColor: '#10B981',
+            showCancelButton: true,
+            cancelButtonText: 'Cancel',
+            cancelButtonColor: '#6B7280'
+          });
+        } else if (data.usdtDetails) {
+          // Show beautiful USDT modal
+          await Swal.fire({
+            title: 'USDT Payment Instructions',
+            html: `
+              <div style="text-align: left;">
+                <div style="background: #f9fafb; padding: 16px; border-radius: 8px; margin-bottom: 16px;">
+                  <p style="font-weight: 600; color: #111827; margin-bottom: 8px;">Cryptocurrency Details:</p>
+                  <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <p><span style="font-weight: 500;">Network:</span> <span style="color: #059669;">${data.usdtDetails.network}</span></p>
+                    <p><span style="font-weight: 500;">Wallet Address:</span> <span style="background: #f3f4f6; padding: 2px 8px; border-radius: 4px; font-family: monospace; font-size: 12px;">${data.usdtDetails.walletAddress}</span></p>
+                    <p><span style="font-weight: 500;">Amount:</span> <span style="font-weight: bold; color: #10b981; font-size: 18px;">${data.usdtDetails.amount} USDT</span></p>
+                    <p><span style="font-weight: 500;">Reference:</span> <span style="background: #fef3c7; padding: 2px 8px; border-radius: 4px; font-size: 12px;">${data.usdtDetails.reference}</span></p>
+                  </div>
+                </div>
+                <div style="background: #dbeafe; padding: 12px; border-radius: 8px;">
+                  <p style="color: #1e40af; font-size: 14px;">
+                    <strong>Next Steps:</strong> Send the USDT amount to the wallet address and contact support with your transaction hash and reference number to activate your subscription.
+                  </p>
+                </div>
+              </div>
+            `,
+            icon: 'info',
+            confirmButtonText: 'I Understand',
+            confirmButtonColor: '#10B981',
+            showCancelButton: true,
+            cancelButtonText: 'Cancel',
+            cancelButtonColor: '#6B7280'
+          });
+        } else {
+          // Free plan activated with beautiful success modal
+          await Swal.fire({
+            title: 'Welcome to AgriPulse! 🌾',
+            html: `
+              <div class="text-center">
+                <div class="mb-4">
+                  <svg class="w-16 h-16 mx-auto text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  </svg>
+                </div>
+                <p class="text-lg font-semibold text-gray-900 mb-2">Explorer Plan Activated!</p>
+                <p class="text-gray-600">You now have access to high-level agricultural insights and overview data.</p>
+              </div>
+            `,
+            icon: 'success',
+            confirmButtonText: 'Get Started',
+            confirmButtonColor: '#10B981'
+          });
+          fetchUserData(); // Refresh user data
+        }
+      } else {
+        await Swal.fire({
+          title: 'Payment Failed',
+          text: data.error || 'Failed to create subscription',
+          icon: 'error',
+          confirmButtonText: 'Try Again',
+          confirmButtonColor: '#EF4444'
+        });
+      }
+    } catch (err) {
+      setError('Network error. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCancelSubscription = async () => {
+    if (!window.confirm('Are you sure you want to cancel your subscription?')) {
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('/api/payment/cancel', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        alert('Subscription cancelled successfully');
+        fetchUserData(); // Refresh user data
+      } else {
+        setError(data.error || 'Failed to cancel subscription');
+      }
+    } catch (err) {
+      setError('Network error. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (!user) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50">
+      {/* Hero Section */}
+      <div className="bg-gradient-to-r from-green-600 to-emerald-700 text-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+          <div className="text-center">
+            <div className="mb-8">
+              <h1 className="text-4xl font-bold mb-4">🌾 AgriPulse Payment</h1>
+              <p className="text-xl mb-2">Complete Your Subscription to Access Agricultural Intelligence</p>
+              <p className="text-green-100 opacity-90">Real-time farm data • Market insights • Risk analysis</p>
+            </div>
+            
+            <div className="flex justify-center space-x-4">
+              <div className="text-center">
+                <p className="text-sm font-medium opacity-90">Logged in as:</p>
+                <p className="font-semibold">{user.name}</p>
+                {currentSubscription && (
+                   <p className="text-sm text-green-100 opacity-90">
+                     {currentSubscription.plan === 'free' && '🆓 Free Plan'}
+                     {currentSubscription.plan === 'insights' && '📊 Insights Plan'}
+                     {currentSubscription.plan === 'enterprise' && '🏢 Enterprise Plan'}
+                   </p>
+                )}
+              </div>
+              
+              <button
+                onClick={() => navigate('/dashboard')}
+                className="text-white hover:text-green-100 transition-colors px-4 py-2 rounded-lg border border-white/20 hover:border-white/30"
+              >
+                ← Back to Dashboard
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Current Subscription Status */}
+      {currentSubscription && (
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className={`rounded-lg p-4 ${
+            currentSubscription.status === 'active' 
+              ? 'bg-green-50 border border-green-200' 
+              : 'bg-yellow-50 border border-yellow-200'
+          }`}>
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-medium text-gray-900">
+                  Current Plan: {currentSubscription.plan === 'free' ? 'Free' : 
+                                currentSubscription.plan === 'insights' ? 'Insights Plan' :
+                                currentSubscription.plan === 'enterprise' ? 'Enterprise Plan' :
+                                currentSubscription.plan.charAt(0).toUpperCase() + currentSubscription.plan.slice(1)}
+                </h3>
+                <p className="text-sm text-gray-600">
+                  Status: {currentSubscription.status.charAt(0).toUpperCase() + currentSubscription.status.slice(1)}
+                </p>
+                {currentSubscription.period && (
+                  <p className="text-sm text-gray-600">
+                    Period: {new Date(currentSubscription.period.start).toLocaleDateString()} - {new Date(currentSubscription.period.end).toLocaleDateString()}
+                  </p>
+                )}
+              </div>
+              {currentSubscription.status === 'active' && (
+                <button
+                  onClick={handleCancelSubscription}
+                  disabled={loading}
+                  className="btn-secondary"
+                >
+                  Cancel Subscription
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+        {/* Pricing Plans Section */}
+        <div className="bg-white/80 backdrop-blur-sm">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+            <div className="text-center mb-12">
+              <h2 className="text-4xl font-bold text-gray-900 mb-4">Choose Your Perfect Plan</h2>
+              <p className="text-xl text-gray-600 mb-2">
+                Unlock agricultural intelligence that drives smart decisions
+              </p>
+              <p className="text-gray-500 max-w-2xl mx-auto">
+                From high-level overviews to enterprise-grade insights, we have the right plan for your agricultural data needs.
+              </p>
+            </div>
+
+          {/* Payment Method Selection - Only show if plan is selected */}
+          {selectedPlan && (
+            <div className="mb-12 bg-white rounded-xl p-8 shadow-sm">
+              <h3 className="text-lg font-semibold text-gray-900 mb-6 text-center">Choose Payment Method</h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <button
+                  className={`p-6 border-2 rounded-xl text-center transition-all duration-300 hover:shadow-lg ${
+                    selectedPaymentMethod === 'paystack'
+                      ? 'border-blue-500 bg-gradient-to-r from-blue-50 to-indigo-50 scale-105'
+                      : 'border-gray-200 hover:border-blue-300'
+                  }`}
+                  onClick={() => setSelectedPaymentMethod('paystack')}
+                >
+                  <div className="mb-4">
+                    <div className="w-16 h-16 mx-auto bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-md">
+                      <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+                      </svg>
+                    </div>
+                    <h4 className="font-bold text-gray-900 mt-3">Paystack</h4>
+                    <p className="text-sm text-gray-600">Instant • Secure • Card & Bank Support</p>
+                  </div>
+                  <p className="text-xs text-blue-600 font-medium">Recommended for faster access</p>
+                </button>
+
+                <button
+                  className={`p-6 border-2 rounded-xl text-center transition-all duration-300 hover:shadow-lg ${
+                    selectedPaymentMethod === 'bank_transfer'
+                      ? 'border-green-500 bg-gradient-to-r from-green-50 to-emerald-50 scale-105'
+                      : 'border-gray-200 hover:border-green-300'
+                  }`}
+                  onClick={() => setSelectedPaymentMethod('bank_transfer')}
+                >
+                  <div className="mb-4">
+                    <div className="w-16 h-16 mx-auto bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-md">
+                      <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+                      </svg>
+                    </div>
+                    <h4 className="font-bold text-gray-900 mt-3">Bank Transfer</h4>
+                    <p className="text-sm text-gray-600">Traditional • Direct • Manual Verification</p>
+                  </div>
+                    <p className="text-xs text-green-600 font-medium">For large transactions</p>
+                </button>
+
+                <button
+                  className={`p-6 border-2 rounded-xl text-center transition-all duration-300 hover:shadow-lg ${
+                    selectedPaymentMethod === 'usdt'
+                      ? 'border-orange-500 bg-gradient-to-r from-orange-50 to-yellow-50 scale-105'
+                      : 'border-gray-200 hover:border-orange-300'
+                  }`}
+                  onClick={() => setSelectedPaymentMethod('usdt')}
+                >
+                  <div className="mb-4">
+                    <div className="w-16 h-16 mx-auto bg-gradient-to-r from-orange-500 to-yellow-600 rounded-xl flex items-center justify-center shadow-md">
+                      <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 2L2 7l10 5 10-5-10-5z"></path>
+                      </svg>
+                    </div>
+                    <h4 className="font-bold text-gray-900 mt-3">USDT (Cryptocurrency)</h4>
+                    <p className="text-sm text-gray-600">Modern • Crypto • Manual Verification</p>
+                  </div>
+                  <p className="text-xs text-orange-600 font-medium">For international payments</p>
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Plans Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+            {plans.map((plan: any) => (
+              <div key={plan.id} className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                <div className="p-6">
+                  <div className="text-center mb-6">
+                    <h3 className="text-2xl font-bold text-gray-900 mb-2">{plan.name}</h3>
+                    {plan.price === 0 ? (
+                      <div className="text-4xl font-bold text-gray-900 mb-2">
+                        Free
+                      </div>
+                    ) : (
+                      <div>
+                        <div className="text-4xl font-bold text-gray-900 mb-1">
+                          ${plan.usdPrice || Math.round(plan.price / 1500)}
+                          <span className="text-lg font-normal text-gray-600">/month</span>
+                        </div>
+                        <div className="text-lg text-gray-600 mb-2">
+                          ~₦{plan.price.toLocaleString()}/month
+                        </div>
+                      </div>
+                    )}
+                    {plan.description && (
+                      <p className="text-gray-600">{plan.description}</p>
+                    )}
+                  </div>
+
+                <div className="border-t border-gray-200 pt-6">
+                  <h4 className="text-sm font-semibold text-gray-900 mb-3">What You Get</h4>
+                  <ul className="space-y-3">
+                    {plan.features.map((feature: string, index: number) => (
+                      <li key={index} className="flex items-start">
+                        <div className="flex-shrink-0 w-6 h-6 bg-emerald-100 rounded-full flex items-center justify-center mr-3">
+                          <svg className="w-4 h-4 text-emerald-600" fill="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+                          </svg>
+                        </div>
+                        <span className="text-sm text-gray-700 font-medium">{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                {plan.bestFor && (
+                  <div className="mt-6 p-4 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-lg">
+                    <div className="flex items-center mb-2">
+                      <svg className="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4-4-4 4-4-4h4m-4 4 0 00 8 0v8a4 4 0 008-4z"></path>
+                      </svg>
+                      <h4 className="text-sm font-semibold text-gray-900">Perfect For:</h4>
+                    </div>
+                    <p className="text-sm text-gray-700">{plan.bestFor}</p>
+                  </div>
+                )}
+
+                <button
+                  onClick={() => {
+                    if (plan.price === 0) {
+                      handleSubscribe(plan.id);
+                    } else {
+                      setSelectedPlan(plan.id);
+                      setSelectedPaymentMethod('paystack');
+                    }
+                  }}
+                  disabled={loading || (currentSubscription?.status === 'active' && currentSubscription?.plan === plan.id)}
+                  className={`w-full py-3 px-6 rounded-lg font-semibold transition-all duration-200 ${
+                    currentSubscription?.plan === plan.id && currentSubscription?.status === 'active'
+                      ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                      : plan.id === selectedPlan
+                      ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white hover:from-emerald-700 hover:to-teal-700 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  {loading ? 'Processing...' : 
+                   currentSubscription?.plan === plan.id && currentSubscription?.status === 'active'
+                    ? 'Current Plan ✓'
+                    : plan.id === selectedPlan && plan.price > 0
+                    ? 'Continue to Payment →'
+                    : plan.id === selectedPlan
+                    ? 'Select Plan'
+                    : 'Select Plan'}
+                </button>
+                </div>
+              </div>
+            ))}
+
+          {/* Complete Payment Button - Only show if both plan and payment method are selected */}
+          {selectedPlan && selectedPaymentMethod && (
+            <div className="text-center">
+              <button
+                onClick={() => handleSubscribe(selectedPlan, selectedPaymentMethod)}
+                disabled={loading}
+                className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-bold text-lg rounded-xl hover:from-emerald-700 hover:to-teal-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {loading ? (
+                  <>
+                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Processing Payment...
+                  </>
+                ) : (
+                  <>
+                    <svg className="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+                    </svg>
+                    Complete Payment
+                  </>
+                )}
+              </button>
+              
+              <div className="mt-4 text-sm text-gray-600">
+                <p>Selected: <span className="font-semibold">{plans.find(p => p.id === selectedPlan)?.name}</span></p>
+                <p>Payment: <span className="font-semibold">{selectedPaymentMethod === 'paystack' ? 'Paystack' : selectedPaymentMethod === 'bank_transfer' ? 'Bank Transfer' : 'USDT'}</span></p>
+              </div>
+            </div>
+          )}
+          </div>
+        </div>
+
+        {/* Data Collection Information */}
+        <div className="mt-12 bg-green-50 rounded-lg border border-green-200 p-8">
+          <h3 className="text-xl font-bold text-gray-900 mb-6">How Our Data Is Collected</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <div className="space-y-4">
+              <div className="flex items-start">
+                <div className="flex-shrink-0">
+                  <div className="flex items-center justify-center h-8 w-8 rounded-full bg-green-100">
+                    <span className="text-green-600 font-medium text-sm">1</span>
+                  </div>
+                </div>
+                <div className="ml-4">
+                  <h4 className="font-medium text-gray-900">Direct farmer registration</h4>
+                  <p className="text-gray-600">Farmers sign up and provide their farm information directly</p>
+                </div>
+              </div>
+              <div className="flex items-start">
+                <div className="flex-shrink-0">
+                  <div className="flex items-center justify-center h-8 w-8 rounded-full bg-green-100">
+                    <span className="text-green-600 font-medium text-sm">2</span>
+                  </div>
+                </div>
+                <div className="ml-4">
+                  <h4 className="font-medium text-gray-900">Monthly farm updates</h4>
+                  <p className="text-gray-600">Regular updates on planting, growth, and harvesting activities</p>
+                </div>
+              </div>
+            </div>
+            <div className="space-y-4">
+              <div className="flex items-start">
+                <div className="flex-shrink-0">
+                  <div className="flex items-center justify-center h-8 w-8 rounded-full bg-green-100">
+                    <span className="text-green-600 font-medium text-sm">3</span>
+                  </div>
+                </div>
+                <div className="ml-4">
+                  <h4 className="font-medium text-gray-900">Field verification and photo checks</h4>
+                  <p className="text-gray-600">Our team verifies farm data through site visits and photo documentation</p>
+                </div>
+              </div>
+              <div className="flex items-start">
+                <div className="flex-shrink-0">
+                  <div className="flex items-center justify-center h-8 w-8 rounded-full bg-green-100">
+                    <span className="text-green-600 font-medium text-sm">4</span>
+                  </div>
+                </div>
+                <div className="ml-4">
+                  <h4 className="font-medium text-gray-900">Community and group-based validation</h4>
+                  <p className="text-gray-600">Data is cross-validated through farmer cooperatives and community groups</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="text-center">
+            <h4 className="text-lg font-semibold text-green-800 mb-2">Real farmers. Real farms. Real data.</h4>
+          </div>
+        </div>
+
+        {/* Important Notes */}
+        <div className="mt-8 bg-yellow-50 rounded-lg border border-yellow-200 p-8">
+          <h3 className="text-xl font-bold text-gray-900 mb-6">Important Notes</h3>
+          <div className="space-y-4">
+            <div className="flex items-start">
+              <svg className="w-5 h-5 text-yellow-600 mr-2 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+              </svg>
+              <div>
+                <h4 className="font-medium text-gray-900">No API access at this stage</h4>
+                <p className="text-gray-600">Current plans focus on insights and reports, not raw data API access</p>
+              </div>
+            </div>
+            <div className="flex items-start">
+              <svg className="w-5 h-5 text-yellow-600 mr-2 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+              </svg>
+              <div>
+                <h4 className="font-medium text-gray-900">No "unlimited" usage promises</h4>
+                <p className="text-gray-600">We focus on quality insights rather than unlimited data volume</p>
+              </div>
+            </div>
+            <div className="flex items-start">
+              <svg className="w-5 h-5 text-yellow-600 mr-2 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+              </svg>
+              <div>
+                <h4 className="font-medium text-gray-900">Data is curated, verified, and insight-focused</h4>
+                <p className="text-gray-600">All data goes through quality checks and is transformed into actionable insights</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* FAQ Section */}
+        <div className="mt-12 bg-white rounded-lg shadow-sm border p-8">
+          <h3 className="text-xl font-bold text-gray-900 mb-6">Frequently Asked Questions</h3>
+          <div className="space-y-6">
+            <div>
+              <h4 className="font-medium text-gray-900 mb-2">Can I change my plan anytime?</h4>
+              <p className="text-gray-600">Yes, you can upgrade or downgrade your plan at any time. Changes take effect immediately.</p>
+            </div>
+            <div>
+              <h4 className="font-medium text-gray-900 mb-2">How do you verify the data?</h4>
+              <p className="text-gray-600">We use field verification, photo documentation, and community validation to ensure data accuracy.</p>
+            </div>
+            <div>
+              <h4 className="font-medium text-gray-900 mb-2">Is there a free trial?</h4>
+              <p className="text-gray-600">The Explorer plan is free forever with basic insights. You can explore premium features with a 14-day trial.</p>
+            </div>
+            <div>
+              <h4 className="font-medium text-gray-900 mb-2">How does billing work?</h4>
+              <p className="text-gray-600">Billing is monthly and you can cancel anytime. We offer discounts for annual subscriptions.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Payment;
