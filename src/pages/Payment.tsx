@@ -9,6 +9,7 @@ const Payment: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState<any>(null);
   const [currentSubscription, setCurrentSubscription] = useState<any>(null);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 

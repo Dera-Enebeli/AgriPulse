@@ -15,6 +15,7 @@ const Dashboard: React.FC = () => {
 
   
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const fetchUserData = async () => {
     try {
       const token = localStorage.getItem('token');
