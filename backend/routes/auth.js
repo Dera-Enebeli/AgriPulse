@@ -55,6 +55,19 @@ router.post('/register', [
       period: {
         start: new Date(),
         end: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+      },
+      usage: {
+        apiRequests: 0,
+        dataExports: 0,
+        lastReset: new Date()
+      },
+      autoRenew: true,
+      cancelAtPeriodEnd: false,
+      payment: {
+        intent: 'subscription'
+      },
+      metadata: {
+        signupSource: 'registration'
       }
     });
     await subscription.save();
