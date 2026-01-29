@@ -18,8 +18,8 @@ const Home: React.FC = () => {
               Aggregated, anonymous agricultural data insights from farmer cooperatives worldwide
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center animate-slide-in-right">
-              <Link to="/contact" className="btn-secondary text-lg hover-lift">
-                Request Access
+              <Link to="/payment" className="btn-secondary text-lg hover-lift">
+                View Pricing Plans
               </Link>
               <Link to="/data" className="bg-white text-primary-600 hover:bg-gray-100 font-medium py-3 px-6 rounded-lg transition-colors duration-200 text-lg hover-lift">
                 View Sample Insights

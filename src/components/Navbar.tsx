@@ -29,10 +29,10 @@ const Navbar: React.FC = () => {
             <Link to="/" className="text-gray-700 hover:text-primary-600 transition-colors">Home</Link>
             <Link to="/data" className="text-gray-700 hover:text-primary-600 transition-colors">Data Catalog</Link>
             <Link to="/about" className="text-gray-700 hover:text-primary-600 transition-colors">About</Link>
+            <Link to="/payment" className="text-gray-700 hover:text-primary-600 transition-colors">Pricing</Link>
             {localStorage.getItem('token') ? (
               <>
                 <Link to="/dashboard" className="text-gray-700 hover:text-primary-600 transition-colors">Dashboard</Link>
-                <Link to="/payment" className="text-gray-700 hover:text-primary-600 transition-colors">Pricing</Link>
                 <button
                   onClick={() => {
                     localStorage.removeItem('token');
@@ -96,6 +96,13 @@ const Navbar: React.FC = () => {
             >
               About
             </Link>
+            <Link 
+              to="/payment" 
+              className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary-600 hover:bg-gray-50 transition-colors"
+              onClick={closeMenu}
+            >
+              Pricing
+            </Link>
             {localStorage.getItem('token') ? (
               <>
                 <Link 
@@ -104,13 +111,6 @@ const Navbar: React.FC = () => {
                   onClick={closeMenu}
                 >
                   Dashboard
-                </Link>
-                <Link 
-                  to="/payment" 
-                  className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary-600 hover:bg-gray-50 transition-colors"
-                  onClick={closeMenu}
-                >
-                  Pricing
                 </Link>
                 <button
                   onClick={() => {

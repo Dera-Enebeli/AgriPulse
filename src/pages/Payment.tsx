@@ -35,7 +35,9 @@ const Payment: React.FC = () => {
     try {
       const token = localStorage.getItem('token');
       if (!token) {
-        navigate('/login');
+        // Don't redirect - allow viewing pricing without authentication
+        setUser(null);
+        setCurrentSubscription(null);
         return;
       }
 
@@ -71,11 +73,30 @@ const Payment: React.FC = () => {
   };
 
   const handleSubscribe = async (planId: string, paymentMethod: string = 'paystack') => {
+    // Check authentication first
+    const token = localStorage.getItem('token');
+    if (!token) {
+      await Swal.fire({
+        title: 'Login Required',
+        text: 'Please login or create an account to subscribe to a plan.',
+        icon: 'info',
+        confirmButtonText: 'Login',
+        confirmButtonColor: '#10B981',
+        showCancelButton: true,
+        cancelButtonText: 'Cancel',
+        cancelButtonColor: '#6B7280'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          navigate('/login');
+        }
+      });
+      return;
+    }
+
     setLoading(true);
     setError(null);
 
     try {
-      const token = localStorage.getItem('token');
       const response = await fetch('/api/payment/create-payment-session', {
         method: 'POST',
         headers: {
@@ -188,13 +209,32 @@ const Payment: React.FC = () => {
   };
 
   const handleCancelSubscription = async () => {
+    // Check authentication first
+    const token = localStorage.getItem('token');
+    if (!token) {
+      await Swal.fire({
+        title: 'Login Required',
+        text: 'Please login to manage your subscription.',
+        icon: 'info',
+        confirmButtonText: 'Login',
+        confirmButtonColor: '#10B981',
+        showCancelButton: true,
+        cancelButtonText: 'Cancel',
+        cancelButtonColor: '#6B7280'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          navigate('/login');
+        }
+      });
+      return;
+    }
+
     if (!window.confirm('Are you sure you want to cancel your subscription?')) {
       return;
     }
 
     setLoading(true);
     try {
-      const token = localStorage.getItem('token');
       const response = await fetch('/api/payment/cancel', {
         method: 'POST',
         headers: {
@@ -242,11 +282,11 @@ const Payment: React.FC = () => {
                 <p className="text-sm font-medium opacity-90">Logged in as:</p>
                 <p className="font-semibold">{user.name}</p>
                 {currentSubscription && (
-                   <p className="text-sm text-green-100 opacity-90">
-                     {currentSubscription.plan === 'free' && '🆓 Free Plan'}
-                     {currentSubscription.plan === 'insights' && '📊 Insights Plan'}
-                     {currentSubscription.plan === 'enterprise' && '🏢 Enterprise Plan'}
-                   </p>
+                    <p className="text-sm text-green-100 opacity-90">
+                      {currentSubscription.plan === 'free' && '🆓 FREE — Awareness & Trust'}
+                      {currentSubscription.plan === 'insights' && '📊 INSIGHTS PLAN'}
+                      {currentSubscription.plan === 'enterprise' && '🏢 ENTERPRISE PLAN'}
+                    </p>
                 )}
               </div>
               
@@ -271,12 +311,12 @@ const Payment: React.FC = () => {
           }`}>
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-lg font-medium text-gray-900">
-                  Current Plan: {currentSubscription.plan === 'free' ? 'Free' : 
-                                currentSubscription.plan === 'insights' ? 'Insights Plan' :
-                                currentSubscription.plan === 'enterprise' ? 'Enterprise Plan' :
-                                currentSubscription.plan.charAt(0).toUpperCase() + currentSubscription.plan.slice(1)}
-                </h3>
+                 <h3 className="text-lg font-medium text-gray-900">
+                   Current Plan: {currentSubscription.plan === 'free' ? 'FREE — Awareness & Trust' : 
+                                 currentSubscription.plan === 'insights' ? 'INSIGHTS PLAN — Structured, Repeatable Reports' :
+                                 currentSubscription.plan === 'enterprise' ? 'ENTERPRISE PLAN — Decision Support Partner' :
+                                 currentSubscription.plan.charAt(0).toUpperCase() + currentSubscription.plan.slice(1)}
+                 </h3>
                 <p className="text-sm text-gray-600">
                   Status: {currentSubscription.status.charAt(0).toUpperCase() + currentSubscription.status.slice(1)}
                 </p>
@@ -313,73 +353,7 @@ const Payment: React.FC = () => {
               </p>
             </div>
 
-          {/* Payment Method Selection - Only show if plan is selected */}
-          {selectedPlan && (
-            <div className="mb-12 bg-white rounded-xl p-8 shadow-sm">
-              <h3 className="text-lg font-semibold text-gray-900 mb-6 text-center">Choose Payment Method</h3>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <button
-                  className={`p-6 border-2 rounded-xl text-center transition-all duration-300 hover:shadow-lg ${
-                    selectedPaymentMethod === 'paystack'
-                      ? 'border-blue-500 bg-gradient-to-r from-blue-50 to-indigo-50 scale-105'
-                      : 'border-gray-200 hover:border-blue-300'
-                  }`}
-                  onClick={() => setSelectedPaymentMethod('paystack')}
-                >
-                  <div className="mb-4">
-                    <div className="w-16 h-16 mx-auto bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-md">
-                      <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
-                      </svg>
-                    </div>
-                    <h4 className="font-bold text-gray-900 mt-3">Paystack</h4>
-                    <p className="text-sm text-gray-600">Instant • Secure • Card & Bank Support</p>
-                  </div>
-                  <p className="text-xs text-blue-600 font-medium">Recommended for faster access</p>
-                </button>
 
-                <button
-                  className={`p-6 border-2 rounded-xl text-center transition-all duration-300 hover:shadow-lg ${
-                    selectedPaymentMethod === 'bank_transfer'
-                      ? 'border-green-500 bg-gradient-to-r from-green-50 to-emerald-50 scale-105'
-                      : 'border-gray-200 hover:border-green-300'
-                  }`}
-                  onClick={() => setSelectedPaymentMethod('bank_transfer')}
-                >
-                  <div className="mb-4">
-                    <div className="w-16 h-16 mx-auto bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-md">
-                      <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
-                      </svg>
-                    </div>
-                    <h4 className="font-bold text-gray-900 mt-3">Bank Transfer</h4>
-                    <p className="text-sm text-gray-600">Traditional • Direct • Manual Verification</p>
-                  </div>
-                    <p className="text-xs text-green-600 font-medium">For large transactions</p>
-                </button>
-
-                <button
-                  className={`p-6 border-2 rounded-xl text-center transition-all duration-300 hover:shadow-lg ${
-                    selectedPaymentMethod === 'usdt'
-                      ? 'border-orange-500 bg-gradient-to-r from-orange-50 to-yellow-50 scale-105'
-                      : 'border-gray-200 hover:border-orange-300'
-                  }`}
-                  onClick={() => setSelectedPaymentMethod('usdt')}
-                >
-                  <div className="mb-4">
-                    <div className="w-16 h-16 mx-auto bg-gradient-to-r from-orange-500 to-yellow-600 rounded-xl flex items-center justify-center shadow-md">
-                      <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 2L2 7l10 5 10-5-10-5z"></path>
-                      </svg>
-                    </div>
-                    <h4 className="font-bold text-gray-900 mt-3">USDT (Cryptocurrency)</h4>
-                    <p className="text-sm text-gray-600">Modern • Crypto • Manual Verification</p>
-                  </div>
-                  <p className="text-xs text-orange-600 font-medium">For international payments</p>
-                </button>
-              </div>
-            </div>
-          )}
 
           {/* Plans Grid */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
@@ -399,7 +373,7 @@ const Payment: React.FC = () => {
                           <span className="text-lg font-normal text-gray-600">/month</span>
                         </div>
                         <div className="text-lg text-gray-600 mb-2">
-                          ~₦{plan.price.toLocaleString()}/month
+                          (~₦{plan.price.toLocaleString()}/month)
                         </div>
                       </div>
                     )}
@@ -437,9 +411,82 @@ const Payment: React.FC = () => {
                 )}
 
                 <button
-                  onClick={() => {
+                  onClick={async () => {
                     if (plan.price === 0) {
                       handleSubscribe(plan.id);
+                    } else if (plan.id === selectedPlan && plan.price > 0) {
+                      // Show payment details with embedded payment methods
+                      const selectedPlanData = plans.find(p => p.id === plan.id);
+                      const { value: selectedPayment } = await Swal.fire({
+                        title: `${selectedPlanData?.name}`,
+                        html: `
+                          <div style="text-align: left;">
+                            <div style="background: #f9fafb; padding: 16px; border-radius: 8px; margin-bottom: 16px;">
+                              <p style="font-weight: 600; color: #111827; margin-bottom: 8px;">💰 Price:</p>
+                              <p style="font-size: 20px; font-weight: bold; color: #059669; margin-bottom: 4px;">
+                                $${selectedPlanData?.usdPrice || Math.round(plan.price / 1500)}/month
+                              </p>
+                              <p style="font-size: 16px; color: #6b7280;">
+                                (~₦${plan.price.toLocaleString()}/month)
+                              </p>
+                            </div>
+                            <div style="background: #f0f9ff; padding: 16px; border-radius: 8px; margin-bottom: 16px;">
+                              <p style="font-weight: 600; color: #111827; margin-bottom: 8px;">✨ What You Get:</p>
+                              <ul style="margin: 0; padding-left: 20px;">
+                                ${selectedPlanData?.features.map((feature: string) => `<li style="margin-bottom: 6px; color: #374151;">✅ ${feature}</li>`).join('')}
+                              </ul>
+                            </div>
+                            ${selectedPlanData?.bestFor ? `
+                            <div style="background: #fef3c7; padding: 16px; border-radius: 8px; margin-bottom: 16px;">
+                              <p style="font-weight: 600; color: #111827; margin-bottom: 4px;">🎯 Perfect For:</p>
+                              <p style="color: #374151;">${selectedPlanData.bestFor}</p>
+                            </div>
+                            ` : ''}
+                            <div style="background: #ede9fe; padding: 16px; border-radius: 8px; margin-bottom: 20px;">
+                              <p style="font-weight: 600; color: #111827; margin-bottom: 8px;">💳 Choose Payment Method:</p>
+                              <div style="display: flex; flex-direction: column; gap: 8px;">
+                                <label style="display: flex; align-items: center; padding: 8px; background: white; border: 2px solid #ddd; border-radius: 6px; cursor: pointer;">
+                                  <input type="radio" name="payment" value="paystack" checked style="margin-right: 8px;">
+                                  <div>
+                                    <strong>Paystack</strong> - Fast & Secure (Card, Bank Transfer)
+                                  </div>
+                                </label>
+                                <label style="display: flex; align-items: center; padding: 8px; background: white; border: 2px solid #ddd; border-radius: 6px; cursor: pointer;">
+                                  <input type="radio" name="payment" value="bank_transfer" style="margin-right: 8px;">
+                                  <div>
+                                    <strong>Bank Transfer</strong> - Traditional Banking
+                                  </div>
+                                </label>
+                                <label style="display: flex; align-items: center; padding: 8px; background: white; border: 2px solid #ddd; border-radius: 6px; cursor: pointer;">
+                                  <input type="radio" name="payment" value="usdt" style="margin-right: 8px;">
+                                  <div>
+                                    <strong>USDT</strong> - Cryptocurrency
+                                  </div>
+                                </label>
+                              </div>
+                            </div>
+                          </div>
+                        `,
+                        icon: 'info',
+                        showCancelButton: true,
+                        cancelButtonText: 'Cancel',
+                        cancelButtonColor: '#6B7280',
+                        confirmButtonText: 'Complete Payment',
+                        confirmButtonColor: '#10B981',
+                        preConfirm: () => {
+                          const selected = (document.querySelector('input[name="payment"]:checked') as HTMLInputElement)?.value;
+                          if (!selected) {
+                            Swal.showValidationMessage('Please select a payment method');
+                            return false;
+                          }
+                          return selected;
+                        }
+                      });
+
+                      if (selectedPayment) {
+                        setSelectedPaymentMethod(selectedPayment);
+                        handleSubscribe(plan.id, selectedPayment);
+                      }
                     } else {
                       setSelectedPlan(plan.id);
                       setSelectedPaymentMethod('paystack');
@@ -464,43 +511,27 @@ const Payment: React.FC = () => {
                     : 'Select Plan'}
                 </button>
                 </div>
-              </div>
-            ))}
+               </div>
+             ))}
+           </div>
 
-          {/* Complete Payment Button - Only show if both plan and payment method are selected */}
-          {selectedPlan && selectedPaymentMethod && (
-            <div className="text-center">
-              <button
-                onClick={() => handleSubscribe(selectedPlan, selectedPaymentMethod)}
-                disabled={loading}
-                className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-bold text-lg rounded-xl hover:from-emerald-700 hover:to-teal-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {loading ? (
-                  <>
-                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    Processing Payment...
-                  </>
-                ) : (
-                  <>
-                    <svg className="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
-                    </svg>
-                    Complete Payment
-                  </>
-                )}
-              </button>
-              
-              <div className="mt-4 text-sm text-gray-600">
-                <p>Selected: <span className="font-semibold">{plans.find(p => p.id === selectedPlan)?.name}</span></p>
-                <p>Payment: <span className="font-semibold">{selectedPaymentMethod === 'paystack' ? 'Paystack' : selectedPaymentMethod === 'bank_transfer' ? 'Bank Transfer' : 'USDT'}</span></p>
-              </div>
-            </div>
-          )}
+           {/* Enterprise Differentiator */}
+           <div className="mt-8 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-6 border border-green-200">
+             <div className="text-center">
+               <h3 className="text-xl font-bold text-gray-900 mb-4">The Enterprise Difference</h3>
+               <p className="text-gray-700 mb-4">
+                 <span className="font-medium text-green-700">Insights = "Here is the report"</span>
+                 <span className="mx-3 text-gray-500">vs</span>
+                 <span className="font-medium text-emerald-700">Enterprise = "Tell us what you need, we'll analyze it"</span>
+               </p>
+               <div className="bg-white rounded-lg p-4 border border-gray-200">
+                 <p className="text-gray-800 leading-relaxed">
+                   Enterprise clients don't just receive reports — they influence what data is collected, analyzed, and delivered.
+                 </p>
+               </div>
+             </div>
+           </div>
           </div>
-        </div>
 
         {/* Data Collection Information */}
         <div className="mt-12 bg-green-50 rounded-lg border border-green-200 p-8">

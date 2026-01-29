@@ -20,6 +20,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Payment from './pages/Payment';
 import Dashboard from './components/Dashboard';
+import Reports from './components/Reports';
 
 const ScrollToTop: React.FC = () => {
   const { pathname } = useLocation();
@@ -43,6 +44,7 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/reports" element={<Reports />} />
             <Route path="/payment" element={<Payment />} />
             <Route path="/data" element={<DataCatalog />} />
             <Route path="/data/crop-data" element={<CropData />} />
