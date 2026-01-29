@@ -62,7 +62,7 @@ const MarketData: React.FC = () => {
       price: 'Contact for pricing',
       features: ['Supply chain mapping', 'Transportation analysis', 'Storage utilization', 'Flow optimization'],
       chartType: 'line' as const,
-      whatItAnswers: 'How efficiently is agricultural produce moving through the supply chain?',
+      whatItAnswers: 'How efficiently is agricultural produce moving through supply chain?',
       whatsInside: {
         regions: 'Major transportation corridors and storage hubs',
         metrics: 'Transportation costs, storage utilization, delivery times',

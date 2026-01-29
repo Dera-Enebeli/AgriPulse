@@ -39,7 +39,7 @@ const RegionalInsights: React.FC = () => {
       price: 'Contact for pricing',
       features: ['Storage capacity', 'Processing facilities', 'Transportation networks', 'Infrastructure gaps'],
       chartType: 'doughnut' as const,
-      whatItAnswers: 'What is the infrastructure capacity and where are the bottlenecks?',
+      whatItAnswers: 'What is infrastructure capacity and where are the bottlenecks?',
       whatsInside: {
         regions: 'Major agricultural production areas',
         infrastructure: 'Grain storage, processing plants, transportation networks',

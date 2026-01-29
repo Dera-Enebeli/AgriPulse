@@ -82,7 +82,6 @@ const CropData: React.FC = () => {
     }
   ];
 
-
   const handleRequestSample = (datasetName: string) => {
     setSelectedDataset(datasetName);
     setIsModalOpen(true);
