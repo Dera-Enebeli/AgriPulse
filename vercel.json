@@ -34,13 +34,5 @@
       "src": "/custom-solutions",
       "dest": "/custom-solutions"
     }
-  ],
-  "env": {
-    "REACT_APP_API_URL": "@api-url"
-  },
-  "build": {
-    "env": {
-      "REACT_APP_API_URL": "@api-url"
-    }
-  }
+  ]
 }
