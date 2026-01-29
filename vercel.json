@@ -1,11 +1,16 @@
 {
-  "name": "agripulse",
   "version": 2,
+  "name": "agripulse",
   "buildCommand": "npm run build",
   "outputDirectory": "build",
   "installCommand": "npm install",
   "framework": "create-react-app",
+  "functions": {},
   "routes": [
+    {
+      "src": "/api",
+      "dest": "/api"
+    },
     {
       "src": "/data/crop-data",
       "dest": "/data/crop-data"
@@ -23,8 +28,20 @@
       "dest": "/data/regional-insights"
     },
     {
+      "src": "/reports",
+      "dest": "/reports"
+    },
+    {
       "src": "/custom-solutions",
       "dest": "/custom-solutions"
     }
-  ]
+  ],
+  "env": {
+    "REACT_APP_API_URL": "@api-url"
+  },
+  "build": {
+    "env": {
+      "REACT_APP_API_URL": "@api-url"
+    }
+  }
 }
