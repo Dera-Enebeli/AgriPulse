@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { authAPI, dashboardAPI, paymentAPI } from '../services/api';
+import { authAPI, dashboardAPI } from '../services/api';
 import DashboardOverview from './DashboardOverview';
 import MarketIntelligence from './MarketIntelligence';
 import RiskMonitoring from './RiskMonitoring';
@@ -40,17 +40,6 @@ const Dashboard: React.FC = () => {
         // Set default user for development
         setUser({ name: 'Test User', email: 'test@example.com' });
         setSubscription({ plan: 'free', status: 'active' });
-      }
-
-      // Also fetch from payment API for confirmation
-      try {
-        const paymentSubscription = await paymentAPI.getSubscriptionStatus();
-        console.log('Payment API subscription:', paymentSubscription);
-        if (paymentSubscription.subscription) {
-          setSubscription(paymentSubscription.subscription);
-        }
-      } catch (error) {
-        console.error('Failed to fetch payment subscription:', error);
       }
     } catch (error) {
       console.error('Failed to fetch user data:', error);
@@ -102,11 +91,11 @@ const Dashboard: React.FC = () => {
                 <p className="text-xs text-gray-500">{user.organization}</p>
                 {subscription && (
                   <p className="text-xs text-primary-600 font-medium">
-                    {subscription.plan === 'free' ? 'Free' :
+                    {subscription.plan === 'free' ? 'FREE — Awareness & Trust' :
                      subscription.plan === 'explorer' ? 'Explorer' :
-                     subscription.plan === 'insights' ? 'Insights' :
-                     subscription.plan === 'enterprise' ? 'Enterprise' :
-                     subscription.plan.charAt(0).toUpperCase() + subscription.plan.slice(1)} Plan
+                     subscription.plan === 'insights' ? 'INSIGHTS PLAN' :
+                     subscription.plan === 'enterprise' ? 'ENTERPRISE PLAN' :
+                     subscription.plan.charAt(0).toUpperCase() + subscription.plan.slice(1)}
                   </p>
                 )}
               </div>
@@ -141,18 +130,18 @@ const Dashboard: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="text-center">
             <h2 className="text-2xl font-bold text-gray-900 mb-2">
-              {subscription?.plan === 'free' && '🆓 Free Plan — Awareness Only'}
+              {subscription?.plan === 'free' && '🆓 FREE — Awareness & Trust'}
               {subscription?.plan === 'explorer' && '🌾 Explorer Plan — Awareness Only'}
-              {subscription?.plan === 'insights' && '📊 Insights Plan — Decision-Ready'}
-              {subscription?.plan === 'enterprise' && '🏢 Enterprise Plan — Power & Influence'}
-              {!subscription?.plan && '🆓 Free Plan — Awareness Only'}
+              {subscription?.plan === 'insights' && '📊 INSIGHTS PLAN — Structured Reports'}
+              {subscription?.plan === 'enterprise' && '🏢 ENTERPRISE PLAN — Decision Support Partner'}
+              {!subscription?.plan && '🆓 FREE — Awareness & Trust'}
             </h2>
             <p className="text-lg text-gray-600">
-              {subscription?.plan === 'free' && 'Keep this lightweight and non-decision-ready. See what\'s possible, then unlock deeper insights.'}
+              {subscription?.plan === 'free' && 'Perfect for exploring agricultural data and understanding the landscape.'}
               {subscription?.plan === 'explorer' && 'Keep this lightweight and non-decision-ready. See what\'s possible, then unlock deeper insights.'}
-              {subscription?.plan === 'insights' && 'This is where real value starts. Make confident decisions with reliable agricultural intelligence.'}
-              {subscription?.plan === 'enterprise' && 'Perfect timing and custom insights. Direct access to experts and early data signals.'}
-              {!subscription?.plan && 'Keep this lightweight and non-decision-ready. See what\'s possible, then unlock deeper insights.'}
+              {subscription?.plan === 'insights' && 'Structured, repeatable reports delivered monthly. Perfect for consistent monitoring.'}
+              {subscription?.plan === 'enterprise' && 'Tell us what you need, we\'ll analyze it. Custom intelligence for your specific decisions.'}
+              {!subscription?.plan && 'Perfect for exploring agricultural data and understanding the landscape.'}
             </p>
             
             {/* Call-to-action based on plan */}
@@ -184,6 +173,14 @@ const Dashboard: React.FC = () => {
             >
               Overview
             </button>
+            {(subscription?.plan === 'insights' || subscription?.plan === 'enterprise') && (
+              <button
+                onClick={() => window.location.href = '/reports'}
+                className={`py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300`}
+              >
+                📊 Reports
+              </button>
+            )}
             <button
               onClick={() => handleTabClick('market')}
               className={`py-4 px-1 border-b-2 font-medium text-sm relative ${
