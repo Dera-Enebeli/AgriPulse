@@ -7,6 +7,7 @@ const Payment: React.FC = () => {
   const [selectedPlan, setSelectedPlan] = useState<string>('');
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>('');
   const [loading, setLoading] = useState(false);
+  const [plansLoading, setPlansLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
   const [currentSubscription, setCurrentSubscription] = useState<any>(null);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -27,7 +28,66 @@ const Payment: React.FC = () => {
         setPlans(data.plans);
       }
     } catch (err) {
-      console.error('Failed to fetch plans:', err);
+      console.error('Failed to fetch plans, using static data:', err);
+      // Fallback to static plans when API is not available
+      const staticPlans = [
+        {
+          _id: 'basic',
+          name: 'Basic Plan',
+          price: 0,
+          description: 'Free access to basic agricultural insights',
+          features: [
+            '1,000 API requests/month',
+            '10 data exports/month', 
+            'Basic dashboard access',
+            'Email support'
+          ],
+          apiRequests: '1,000',
+          dataExports: '10',
+          dashboardAccess: 'Basic',
+          support: 'Email',
+          highlighted: false
+        },
+        {
+          _id: 'premium',
+          name: 'Premium Plan',
+          price: 99,
+          description: 'Advanced agricultural intelligence for professionals',
+          features: [
+            '10,000 API requests/month',
+            '100 data exports/month',
+            'Advanced dashboard access', 
+            'Custom reports',
+            'Priority support'
+          ],
+          apiRequests: '10,000',
+          dataExports: '100',
+          dashboardAccess: 'Advanced',
+          support: 'Priority',
+          highlighted: true
+        },
+        {
+          _id: 'enterprise',
+          name: 'Enterprise Plan',
+          price: 499,
+          description: 'Complete solution for large organizations',
+          features: [
+            'Unlimited API requests',
+            'Unlimited data exports',
+            'Full dashboard access',
+            'Custom analytics',
+            'Dedicated support'
+          ],
+          apiRequests: 'Unlimited',
+          dataExports: 'Unlimited', 
+          dashboardAccess: 'Full',
+          support: 'Dedicated',
+          highlighted: false
+        }
+      ];
+      setPlans(staticPlans);
+    } finally {
+      setPlansLoading(false);
     }
   };
 
@@ -257,7 +317,10 @@ const Payment: React.FC = () => {
     }
   };
 
-  if (!user) {
+  // Don't require user for viewing pricing - allow non-authenticated users
+  // Only show loading if plans are still loading
+
+  if (plansLoading) {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
@@ -278,24 +341,43 @@ const Payment: React.FC = () => {
             </div>
             
             <div className="flex justify-center space-x-4">
-              <div className="text-center">
-                <p className="text-sm font-medium opacity-90">Logged in as:</p>
-                <p className="font-semibold">{user.name}</p>
-                {currentSubscription && (
-                    <p className="text-sm text-green-100 opacity-90">
-                      {currentSubscription.plan === 'free' && '🆓 FREE — Awareness & Trust'}
-                      {currentSubscription.plan === 'insights' && '📊 INSIGHTS PLAN'}
-                      {currentSubscription.plan === 'enterprise' && '🏢 ENTERPRISE PLAN'}
-                    </p>
-                )}
-              </div>
+              {user ? (
+                <div className="text-center">
+                  <p className="text-sm font-medium opacity-90">Logged in as:</p>
+                  <p className="font-semibold">{user.name}</p>
+                  {currentSubscription && (
+                      <p className="text-sm text-green-100 opacity-90">
+                        {currentSubscription.plan === 'free' && '🆓 FREE — Awareness & Trust'}
+                        {currentSubscription.plan === 'insights' && '📊 INSIGHTS PLAN'}
+                        {currentSubscription.plan === 'enterprise' && '🏢 ENTERPRISE PLAN'}
+                      </p>
+                  )}
+                </div>
+              ) : (
+                <div className="text-center">
+                  <p className="text-sm font-medium opacity-90">Viewing pricing plans</p>
+                  <p className="font-semibold">Guest User</p>
+                  <p className="text-sm text-green-100 opacity-90">
+                    Login to subscribe to a plan
+                  </p>
+                </div>
+              )}
               
-              <button
-                onClick={() => navigate('/dashboard')}
-                className="text-white hover:text-green-100 transition-colors px-4 py-2 rounded-lg border border-white/20 hover:border-white/30"
-              >
-                ← Back to Dashboard
-              </button>
+              {user ? (
+                <button
+                  onClick={() => navigate('/dashboard')}
+                  className="text-white hover:text-green-100 transition-colors px-4 py-2 rounded-lg border border-white/20 hover:border-white/30"
+                >
+                  ← Back to Dashboard
+                </button>
+              ) : (
+                <button
+                  onClick={() => navigate('/')}
+                  className="text-white hover:text-green-100 transition-colors px-4 py-2 rounded-lg border border-white/20 hover:border-white/30"
+                >
+                  ← Back to Home
+                </button>
+              )}
             </div>
           </div>
         </div>
