@@ -28,7 +28,7 @@ const Dashboard: React.FC = () => {
 
       // Fetch user data (this now includes subscription)
       try {
-        const userData = await authAPI.getProfile();
+        const userData = await authAPI.getUserProfile();
         console.log('User data from API:', userData);
         setUser(userData.user);
         setSubscription({

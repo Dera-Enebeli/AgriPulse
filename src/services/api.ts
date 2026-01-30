@@ -107,14 +107,17 @@ export const authAPI = {
 
 // Dashboard API calls
 export const dashboardAPI = {
-  getOverview: async () => {
-    return apiRequest('/dashboard/overview');
+  getOverview: async (params?: any) => {
+    const queryString = params ? new URLSearchParams(params).toString() : '';
+    return apiRequest(`/dashboard/overview?${queryString}`);
   },
-  getMarketData: async () => {
-    return apiRequest('/dashboard/market');
+  getMarketData: async (params?: any) => {
+    const queryString = params ? new URLSearchParams(params).toString() : '';
+    return apiRequest(`/dashboard/market?${queryString}`);
   },
-  getRiskData: async () => {
-    return apiRequest('/dashboard/risk');
+  getRiskData: async (params?: any) => {
+    const queryString = params ? new URLSearchParams(params).toString() : '';
+    return apiRequest(`/dashboard/risk?${queryString}`);
   }
 };
 
