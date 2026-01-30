@@ -118,6 +118,10 @@ export const dashboardAPI = {
   getRiskData: async (params?: any) => {
     const queryString = params ? new URLSearchParams(params).toString() : '';
     return apiRequest(`/dashboard/risk?${queryString}`);
+  },
+  getRiskMonitoring: async (params?: any) => {
+    const queryString = params ? new URLSearchParams(params).toString() : '';
+    return apiRequest(`/dashboard/risk-monitoring?${queryString}`);
   }
 };
 
