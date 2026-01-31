@@ -60,7 +60,7 @@
   "description": "y",
   "main": "postcss.config.js",
   "author": "",
-  "proxy": "http://localhost:5002",
+
   "license": "ISC",
   "repository": {
     "type": "git",

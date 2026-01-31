@@ -5,34 +5,22 @@
   "outputDirectory": "build",
   "installCommand": "npm install",
   "framework": "create-react-app",
+  "functions": {
+    "api/index.js": {
+      "runtime": "nodejs18.x"
+    }
+  },
   "routes": [
     {
-      "src": "/api",
-      "dest": "/api"
+      "src": "/api/(.*)",
+      "dest": "/api/index.js"
     },
     {
-      "src": "/data/crop-data",
-      "dest": "/data/crop-data"
-    },
-    {
-      "src": "/data/market-data", 
-      "dest": "/data/market-data"
-    },
-    {
-      "src": "/data/risk-analysis",
-      "dest": "/data/risk-analysis"
-    },
-    {
-      "src": "/data/regional-insights",
-      "dest": "/data/regional-insights"
-    },
-    {
-      "src": "/reports",
-      "dest": "/reports"
-    },
-    {
-      "src": "/custom-solutions",
-      "dest": "/custom-solutions"
+      "src": "/(.*)",
+      "dest": "/build/$1"
     }
-  ]
+  ],
+  "env": {
+    "NODE_ENV": "production"
+  }
 }
