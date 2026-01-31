@@ -1,11 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import SampleChart from '../components/SampleChart';
-import RequestSampleModal from '../components/RequestSampleModal';
 
 const DataCatalog: React.FC = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedDataset, setSelectedDataset] = useState('');
+  // Removed Request Sample functionality - users now go to payment page for access
 
   const dataCategories = [
     {
@@ -75,10 +73,7 @@ const DataCatalog: React.FC = () => {
     return categoryMap[categoryName] || 'data';
   };
 
-  const handleRequestSample = (datasetName: string) => {
-    setSelectedDataset(datasetName);
-    setIsModalOpen(true);
-  };
+  // Sample request functionality removed - users now go to payment page
 
   return (
     <div>
@@ -145,18 +140,12 @@ const DataCatalog: React.FC = () => {
                     </ul>
                   </div>
                   
-                  <div className="flex gap-4">
-                    <button 
-                      className="flex-1 btn-primary"
-                      onClick={() => handleRequestSample(category.name)}
-                    >
-                      Request Sample
-                    </button>
+                  <div className="mt-6">
                     <Link 
                       to={`/data/${getCategoryPath(category.name)}`}
-                      className="flex-1 border border-primary-600 text-primary-600 hover:bg-primary-50 font-medium py-2 px-4 rounded-lg transition-colors duration-200 text-center"
+                      className="w-full btn-primary text-center py-3 px-6"
                     >
-                      Learn More
+                      View Dataset Details
                     </Link>
                   </div>
                 </div>
@@ -181,12 +170,6 @@ const DataCatalog: React.FC = () => {
               </div>
             </section>
 
-      {/* Request Sample Modal */}
-      <RequestSampleModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        datasetName={selectedDataset}
-      />
     </div>
   );
 };

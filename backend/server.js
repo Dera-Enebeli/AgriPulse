@@ -12,6 +12,7 @@ const paymentRoutes = require('./routes/payment');
 const contactRoutes = require('./routes/contact');
 const dashboardRoutes = require('./routes/dashboard');
 const testRoutes = require('./routes/test');
+const reportsRoutes = require('./routes/reports');
 
 const app = express();
 
@@ -51,6 +52,7 @@ app.use('/api/payment', paymentRoutes);
 app.use('/api/contact', contactRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/test', testRoutes);
+app.use('/api/reports', reportsRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {

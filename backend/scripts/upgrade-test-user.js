@@ -2,29 +2,24 @@ const mongoose = require('mongoose');
 const User = require('../models/User');
 const Subscription = require('../models/Subscription');
 
-// Connect to MongoDB
-const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/agripulse';
-
-async function upgradeSubscription() {
+async function upgradeToInsights() {
   try {
-    await mongoose.connect(mongoUri);
+    await mongoose.connect('mongodb://localhost:27017/agripulse');
     console.log('✅ Connected to database');
 
-    // Find your user (update email to match yours)
-    const user = await User.findOne({ email: 'test@example.com' });
+    // Find your existing test user
+    const testUser = await User.findOne({ email: 'test@example.com' });
     
-    if (!user) {
-      console.log('❌ User not found. Update the email in this script.');
+    if (!testUser) {
+      console.log('❌ Test user not found');
       return;
     }
 
-    console.log(`👤 Found user: ${user.name} (${user.email})`);
-
-    // Update or create subscription
+    // Upgrade to INSIGHTS plan with premium features
     await Subscription.findOneAndUpdate(
-      { user: user._id },
+      { user: testUser._id },
       {
-        plan: 'insights', // Change to 'enterprise' for full access
+        plan: 'insights',
         status: 'active',
         pricing: { 
           amount: 150000, 
@@ -42,30 +37,37 @@ async function upgradeSubscription() {
           start: new Date(),
           end: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
         },
+        autoRenew: true,
+        cancelAtPeriodEnd: false,
         payment: {
           method: 'paystack',
           intent: 'subscription',
-          reference: 'TEST-' + Date.now(),
+          reference: 'UPGRADE-TEST-' + Date.now(),
           status: 'confirmed',
           confirmedAt: new Date()
+        },
+        metadata: {
+          signupSource: 'upgrade-test',
+          upgradedTo: 'insights',
+          upgradedAt: new Date().toISOString()
         }
-      },
-      { upsert: true }
+      }
     );
 
-    console.log('✅ Subscription upgraded to INSIGHTS plan!');
-    console.log('🎯 You now have access to:');
-    console.log('   - All filters (Region, Crop Type, Time Range)');
-    console.log('   - Market Intelligence tab');
-    console.log('   - Risk Monitoring tab');
-    console.log('   - Exact data counts');
-    console.log('   - Downloadable reports');
+    console.log('✅ Successfully upgraded test@example.com to INSIGHTS plan!');
+    console.log('🔑 Features now available:');
+    console.log('   - All dashboard filters unlocked');
+    console.log('   - Market Intelligence tab access');
+    console.log('   - Risk Monitoring tab access');
+    console.log('   - Premium data visualizations');
+    console.log('   - Custom reports enabled');
+    
+    await mongoose.connection.close();
+    console.log('\n🎉 Test user upgrade complete!');
 
   } catch (error) {
-    console.error('❌ Error:', error);
-  } finally {
-    await mongoose.connection.close();
+    console.error('❌ Upgrade error:', error);
   }
 }
 
-upgradeSubscription();
+upgradeToInsights();

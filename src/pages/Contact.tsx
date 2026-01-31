@@ -54,10 +54,10 @@ const Contact: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1 className="text-4xl md:text-5xl font-bold mb-4">
-              Request Access
+              Enterprise Demo Request
             </h1>
             <p className="text-xl text-primary-100 max-w-3xl mx-auto">
-              Get started with agricultural intelligence. Join leading organizations using AgriPulse insights.
+              Ready for enterprise-grade insights? Request a custom demo for your organization's specific needs.
             </p>
           </div>
         </div>
@@ -156,19 +156,38 @@ const Contact: React.FC = () => {
                 />
               </div>
               
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                <div className="flex items-start">
-                  <svg className="w-5 h-5 text-blue-600 mt-0.5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                  </svg>
-                  <div className="text-sm text-blue-800">
-                    <p className="font-medium mb-1">What happens next?</p>
-                    <ul className="list-disc list-inside space-y-1 text-blue-700">
-                      <li>We'll review your request within 24 hours</li>
-                      <li>You'll receive sample data and pricing information</li>
-                      <li>We'll schedule a demo to discuss your specific needs</li>
-                      <li>Early access partners receive special pricing</li>
-                    </ul>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <div className="flex items-start">
+                    <svg className="w-5 h-5 text-blue-600 mt-0.5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <div className="text-sm text-blue-800">
+                      <p className="font-medium mb-1">Enterprise Benefits</p>
+                      <ul className="list-disc list-inside space-y-1 text-blue-700">
+                        <li>Custom data collection requests</li>
+                        <li>Priority support & direct contact</li>
+                        <li>Early access to new datasets</li>
+                        <li>Custom analytics & reporting</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                  <div className="flex items-start">
+                    <svg className="w-5 h-5 text-green-600 mt-0.5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3-.895 3-2-1.343-2-3-2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <div className="text-sm text-green-800">
+                      <p className="font-medium mb-1">Quick Start Options</p>
+                      <ul className="list-disc list-inside space-y-1 text-green-700">
+                        <li><a href="/payment" className="text-green-600 hover:text-green-800 underline">View Pricing Plans</a></li>
+                        <li><a href="/data" className="text-green-600 hover:text-green-800 underline">Sample Insights</a></li>
+                        <li>Instant activation for paid plans</li>
+                        <li>No long-term contracts</li>
+                      </ul>
+                    </div>
                   </div>
                 </div>
               </div>

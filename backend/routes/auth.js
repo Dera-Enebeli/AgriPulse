@@ -133,7 +133,7 @@ router.post('/login', [
         email: user.email,
         organization: user.organization,
         role: user.role,
-        subscription: subscription?.plan || 'basic',
+        subscription: subscription?.plan || 'free',
         isVerified: user.isVerified
       }
     });
@@ -167,7 +167,7 @@ router.get('/me', async (req, res) => {
         email: user.email,
         organization: user.organization,
         role: user.role,
-        subscription: subscription?.plan || 'basic',
+        subscription: subscription?.plan || 'free',
         isVerified: user.isVerified,
         apiUsage: user.apiUsage
       }

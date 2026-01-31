@@ -29,17 +29,17 @@ router.get('/plans', (req, res) => {
   const plans = [
     {
       id: 'free',
-      name: 'Free',
+      name: 'FREE — Awareness & Trust',
       price: 0,
       interval: 'month',
       description: 'For individuals and organizations exploring agricultural data',
       features: [
         'High-level agricultural summaries',
-        'Sample regional insights',
+        'Sample regional insights (limited)',
         'Overview of crops and farming activity',
         'Access to published public reports'
       ],
-      bestFor: 'Researchers, students, and first-time users',
+      bestFor: 'Researchers, students, first-time users',
       limits: {
         apiRequests: 0,
         dataExports: 0,
@@ -50,43 +50,47 @@ router.get('/plans', (req, res) => {
     },
     {
       id: 'insights',
-      name: 'Insights Plan',
+      name: 'INSIGHTS PLAN — Structured, Repeatable Reports',
       price: 150000,
       interval: 'month',
-      description: 'For organizations that need reliable, decision-ready insights',
+      description: 'For organizations that need regular, ready-made insights',
       usdPrice: 99,
       features: [
-        'Monthly regional agricultural insight reports',
+        'Monthly regional insight reports (fixed format)',
         'Crop production trends by location',
         'Seasonal risk insights (weather, pests, input challenges)',
         'Downloadable reports (PDF / CSV)',
-        'Email support'
+        'Email support',
+        'Important limitation: Reports are standardized',
+        'No customization by request',
+        'Same structure for all subscribers'
       ],
-      bestFor: 'Buyers, NGOs, agri-projects, analysts, and development programs',
+      bestFor: 'Buyers, NGOs, analysts, agri-projects monitoring regions',
       limits: {
         apiRequests: 5000,
         dataExports: 50,
         dashboardAccess: 'full',
-        customReports: true,
+        customReports: false,
         supportLevel: 'email'
       }
     },
     {
       id: 'enterprise',
-      name: 'Enterprise Plan',
+      name: 'ENTERPRISE PLAN — Decision Support Partner',
       price: 520000,
       interval: 'month',
-      description: 'For organizations needing custom and deeper insights',
+      description: 'For organizations needing custom, decision-level intelligence',
       usdPrice: 349,
       features: [
         'Everything in the Insights Plan',
-        'Custom insight reports',
-        'Regional risk & supply outlooks',
+        'Custom reports built to your needs',
+        'Region-specific supply & risk forecasts',
+        'Ability to request specific crops, states, or farm groups',
+        'Direct communication (WhatsApp / calls / email)',
         'Priority support',
-        'Direct communication for tailored requests',
         'Early access to new datasets'
       ],
-      bestFor: 'Large buyers, donors, lenders, government programs, and agribusinesses',
+      bestFor: 'Large buyers, donors, lenders, government & agribusinesses',
       limits: {
         apiRequests: 10000,
         dataExports: 100,
