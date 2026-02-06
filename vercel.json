@@ -4,56 +4,6 @@
   "outputDirectory": "build",
   "installCommand": "npm install",
   "framework": "create-react-app",
-  "functions": {
-    "api/health.js": {
-      "runtime": "nodejs18.x",
-      "maxDuration": 10
-    },
-    "api/auth/login.js": {
-      "runtime": "nodejs18.x",
-      "maxDuration": 10
-    },
-    "api/auth/register.js": {
-      "runtime": "nodejs18.x",
-      "maxDuration": 10
-    },
-    "api/auth/me.js": {
-      "runtime": "nodejs18.x",
-      "maxDuration": 10
-    },
-    "api/auth/profile.js": {
-      "runtime": "nodejs18.x",
-      "maxDuration": 10
-    },
-    "api/payment/plans.js": {
-      "runtime": "nodejs18.x",
-      "maxDuration": 10
-    },
-    "api/dashboard/overview.js": {
-      "runtime": "nodejs18.x",
-      "maxDuration": 30
-    },
-    "api/dashboard/crops/trends.js": {
-      "runtime": "nodejs18.x",
-      "maxDuration": 30
-    },
-    "api/dashboard/market/intelligence.js": {
-      "runtime": "nodejs18.x",
-      "maxDuration": 30
-    },
-    "api/dashboard/risk/monitoring.js": {
-      "runtime": "nodejs18.x",
-      "maxDuration": 30
-    },
-    "api/contact/submit.js": {
-      "runtime": "nodejs18.x",
-      "maxDuration": 10
-    },
-    "api/reports/index.js": {
-      "runtime": "nodejs18.x",
-      "maxDuration": 15
-    }
-  },
   "rewrites": [
     {
       "source": "/api/(.*)",
@@ -82,8 +32,5 @@
         }
       ]
     }
-  ],
-  "env": {
-    "NODE_ENV": "production"
-  }
+  ]
 }
