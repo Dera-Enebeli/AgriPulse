@@ -6,14 +6,103 @@
   "installCommand": "npm install",
   "framework": "create-react-app",
   "functions": {
-    "api/index.js": {
-      "runtime": "nodejs18.x"
+    "api/health.js": {
+      "runtime": "nodejs18.x",
+      "maxDuration": 10
+    },
+    "api/auth/login.js": {
+      "runtime": "nodejs18.x",
+      "maxDuration": 10
+    },
+    "api/auth/register.js": {
+      "runtime": "nodejs18.x",
+      "maxDuration": 10
+    },
+    "api/auth/me.js": {
+      "runtime": "nodejs18.x",
+      "maxDuration": 10
+    },
+    "api/auth/profile.js": {
+      "runtime": "nodejs18.x",
+      "maxDuration": 10
+    },
+    "api/payment/plans.js": {
+      "runtime": "nodejs18.x",
+      "maxDuration": 10
+    },
+    "api/dashboard/overview.js": {
+      "runtime": "nodejs18.x",
+      "maxDuration": 30
+    },
+    "api/dashboard/crops/trends.js": {
+      "runtime": "nodejs18.x",
+      "maxDuration": 30
+    },
+    "api/dashboard/market/intelligence.js": {
+      "runtime": "nodejs18.x",
+      "maxDuration": 30
+    },
+    "api/dashboard/risk/monitoring.js": {
+      "runtime": "nodejs18.x",
+      "maxDuration": 30
+    },
+    "api/contact/submit.js": {
+      "runtime": "nodejs18.x",
+      "maxDuration": 10
+    },
+    "api/reports/index.js": {
+      "runtime": "nodejs18.x",
+      "maxDuration": 15
     }
   },
   "routes": [
     {
-      "src": "/api/(.*)",
-      "dest": "/api/index.js"
+      "src": "/api/health",
+      "dest": "/api/health.js"
+    },
+    {
+      "src": "/api/auth/login",
+      "dest": "/api/auth/login.js"
+    },
+    {
+      "src": "/api/auth/register",
+      "dest": "/api/auth/register.js"
+    },
+    {
+      "src": "/api/auth/me",
+      "dest": "/api/auth/me.js"
+    },
+    {
+      "src": "/api/auth/profile",
+      "dest": "/api/auth/profile.js"
+    },
+    {
+      "src": "/api/payment/plans",
+      "dest": "/api/payment/plans.js"
+    },
+    {
+      "src": "/api/dashboard/overview",
+      "dest": "/api/dashboard/overview.js"
+    },
+    {
+      "src": "/api/dashboard/crops/trends",
+      "dest": "/api/dashboard/crops/trends.js"
+    },
+    {
+      "src": "/api/dashboard/market/intelligence",
+      "dest": "/api/dashboard/market/intelligence.js"
+    },
+    {
+      "src": "/api/dashboard/risk/monitoring",
+      "dest": "/api/dashboard/risk/monitoring.js"
+    },
+    {
+      "src": "/api/contact/submit",
+      "dest": "/api/contact/submit.js"
+    },
+    {
+      "src": "/api/reports",
+      "dest": "/api/reports/index.js"
     },
     {
       "src": "/(.*)",
@@ -22,5 +111,24 @@
   ],
   "env": {
     "NODE_ENV": "production"
-  }
+  },
+  "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "%FRONTEND_URL%"
+        },
+        {
+          "key": "Access-Control-Allow-Methods",
+          "value": "GET, POST, PUT, DELETE, OPTIONS"
+        },
+        {
+          "key": "Access-Control-Allow-Headers",
+          "value": "Content-Type, Authorization"
+        }
+      ]
+    }
+  ]
 }

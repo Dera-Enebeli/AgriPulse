@@ -7,7 +7,9 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "install-backend": "cd backend && npm install",
-    "start-backend": "cd backend && npm start"
+    "start-backend": "cd backend && npm start",
+    "test-serverless": "node scripts/test-serverless.js",
+    "deploy:vercel": "vercel --prod"
   },
   "devDependencies": {
     "concurrently": "^7.6.0"
