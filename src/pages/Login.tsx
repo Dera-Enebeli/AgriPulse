@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import { authAPI } from '../services/api';
 
 const Login: React.FC = () => {
@@ -9,7 +9,7 @@ const Login: React.FC = () => {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const navigate = useNavigate();
+  const history = useHistory();
 
   useEffect(() => {
     // Check if user is already logged in
@@ -17,7 +17,7 @@ const Login: React.FC = () => {
     if (token) {
       navigate('/dashboard');
     }
-  }, [navigate]);
+  }, [history]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -37,7 +37,7 @@ const Login: React.FC = () => {
       if (data.success) {
         localStorage.setItem('token', data.token);
         localStorage.setItem('user', JSON.stringify(data.user));
-        navigate('/dashboard');
+      history.push('/dashboard');
       } else {
         setError(data.error || 'Login failed');
       }

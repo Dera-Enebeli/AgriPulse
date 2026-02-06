@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import Swal from 'sweetalert2';
 
 const Payment: React.FC = () => {
@@ -12,7 +12,7 @@ const Payment: React.FC = () => {
   const [currentSubscription, setCurrentSubscription] = useState<any>(null);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [error, setError] = useState<string | null>(null);
-  const navigate = useNavigate();
+  const history = useHistory();
 
   useEffect(() => {
     fetchPlans();
@@ -147,7 +147,7 @@ const Payment: React.FC = () => {
         cancelButtonColor: '#6B7280'
       }).then((result) => {
         if (result.isConfirmed) {
-          navigate('/login');
+          history.push('/login');
         }
       });
       return;
@@ -283,7 +283,7 @@ const Payment: React.FC = () => {
         cancelButtonColor: '#6B7280'
       }).then((result) => {
         if (result.isConfirmed) {
-          navigate('/login');
+          history.push('/login');
         }
       });
       return;
@@ -365,14 +365,14 @@ const Payment: React.FC = () => {
               
               {user ? (
                 <button
-                  onClick={() => navigate('/dashboard')}
+                  onClick={() => history.push('/dashboard')}
                   className="text-white hover:text-green-100 transition-colors px-4 py-2 rounded-lg border border-white/20 hover:border-white/30"
                 >
                   ← Back to Dashboard
                 </button>
               ) : (
                 <button
-                  onClick={() => navigate('/')}
+                  onClick={() => history.push('/')}
                   className="text-white hover:text-green-100 transition-colors px-4 py-2 rounded-lg border border-white/20 hover:border-white/30"
                 >
                   ← Back to Home
